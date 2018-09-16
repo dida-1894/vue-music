@@ -1,16 +1,15 @@
 <template>
   <div id="app">
-    <my-header></my-header>
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import MyHeader from 'components/header/header'
 export default {
   name: 'App',
   components: {
-    MyHeader
   }
 }
 </script>
