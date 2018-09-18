@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Rank from 'components/rank/rank'
 import Recommend from 'components/recommend/recommend'
+import Details from 'components/rank/detail'
 import Search from 'components/search/search'
 import Singer from 'components/singer/singer'
 import Radio from 'components/recommend/Radio'
@@ -19,6 +19,11 @@ export default new Router({
       component: Singer
     },
     {
+      path: "/palylist/detail",
+      name: "SongListDetail",
+      component: Details
+    },
+    {
       path: "/video",
       component: Video
     },
@@ -29,10 +34,6 @@ export default new Router({
     {
       path: "/frieds",
       component: Frieds
-    },
-    {
-      path: "/rank",
-      component: Rank
     },
     {
       path: "/",

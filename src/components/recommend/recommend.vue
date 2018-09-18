@@ -23,10 +23,13 @@
         </h2>
         <mu-row gutter>
           <mu-col span="4" v-for="(item, index) in SongList" :key="index">
-            <img :src="item.picUrl" alt="">
-            <div class="re-name">
-              {{item.name}}
-            </div>
+            <router-link tag="div"
+            :to="{ name: 'SongListDetail', params: {id:item.id} }">
+              <img :src="item.picUrl" alt="">
+              <div class="re-name">
+                {{item.name}}
+              </div>
+            </router-link>
           </mu-col>
         </mu-row>
       </div>
@@ -71,6 +74,9 @@ export default {
   mounted:function(){
     this.getData()
   },
+  watch: {
+
+  },
   methods: {
     getData: function(){
       api.getRecommendBanner()
@@ -81,10 +87,8 @@ export default {
       .catch((err) => console.log(err)),
       api.getRecommendSongList()
       .then((res) => {
-        console.log(res)
         let dataResult = res.data.result.slice(0, 6)
         this.SongList = dataResult
-        console.log(this.SongList)
       })
     }
   }
