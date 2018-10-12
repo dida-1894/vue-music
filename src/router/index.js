@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Recommend from 'components/recommend/recommend'
-import Details from 'components/rank/detail'
+import SongListDetail from 'components/rank/SongListDetail'
 import Search from 'components/search/search'
 import Singer from 'components/singer/singer'
 import Radio from 'components/recommend/Radio'
+import ReMusic from 'components/recommend/Music'
 import Frieds from 'components/frieds/Frieds'
 import Video from 'components/video/Video'
 import Mine from 'components/mine/Mine'
@@ -21,7 +22,7 @@ export default new Router({
     {
       path: "/palylist/detail",
       name: "SongListDetail",
-      component: Details
+      component: SongListDetail
     },
     {
       path: "/video",
@@ -37,10 +38,20 @@ export default new Router({
     },
     {
       path: "/",
+      name: 'recommend',
+      redirect: '/music',
       component: Recommend,
       children: [
-        {name: 'radio', path: "radio", component: require('components/recommend/Radio')},
-
+        {
+        path: 'music',
+        name: 'ReMusic',
+        component: ReMusic
+        },
+        {
+          path: 'radio',
+          name: 'Radio',
+          component: Radio
+        }
       ]
     },
     {

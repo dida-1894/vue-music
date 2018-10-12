@@ -25,7 +25,7 @@ export default {
       default: true
     },
     data: {
-      type: Array,
+      type: [Array,Object],
       default: null
     },
     pulldown: {
@@ -64,7 +64,7 @@ export default {
       })
 
       // 是否派发滚动事件
-      if (!this.listenScroll) {
+      if (this.listenScroll) {
         this.scroll.on('scroll', (pos) => {
           this.$emit('scroll', pos)
         })
