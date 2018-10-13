@@ -10,6 +10,7 @@ import Frieds from 'components/frieds/Frieds'
 import Video from 'components/video/Video'
 import Mine from 'components/mine/Mine'
 
+
 Vue.use(Router)
 
 export default new Router({

@@ -48,11 +48,7 @@
         <div class="tracks">
           <mu-row class="track-head" :class="{track_head_hold:holdTitle}">
             <mu-col span="1" style="vertical-align:middle;padding:9px 0px">
-<<<<<<< HEAD
               <mu-icon value="play_circle_filled_white"></mu-icon>
-=======
-              <mu-icon value="play_circle_filled_white" size="25px"></mu-icon>
->>>>>>> d9aeebcb914fece79b1a1899367549143bead5f0
             </mu-col>
             <mu-col span="7" style="vertical-align:middle;padding:10px 0px">
               播放全部
@@ -101,13 +97,8 @@ export default {
   },
   data() {
     return {
-<<<<<<< HEAD
         id: this.$route.params.id,
         // id: 2187262716,
-=======
-        // id: this.$route.params.id,
-        id: 2187262716,
->>>>>>> d9aeebcb914fece79b1a1899367549143bead5f0
         headMsg:{},
         tracks: {},
         holdTitle: false,
@@ -139,7 +130,7 @@ export default {
   },
   methods: {
     back(){
-      console.log("back")
+      this.$router.go(-1)
     },
     scroll(pos){
       if (pos.y < -238) {
@@ -209,10 +200,7 @@ export default {
               max-height: 100%
               border-radius: 5px
           .name
-<<<<<<< HEAD
-=======
             margin-top: 20px
->>>>>>> d9aeebcb914fece79b1a1899367549143bead5f0
             color: $color-text
             font-weight: $font-weight-title
             font-size: $font-size-small-medium-x

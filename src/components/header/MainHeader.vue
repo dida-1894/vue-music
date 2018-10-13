@@ -39,6 +39,8 @@ export default {
   #main-header
     background-color: $color-background
     padding: 10px
+    position: relative
+    z-index: 100
     .headerMiddle
       text-align: center
       color: $color-text

@@ -15,3 +15,5 @@
 
 ## vue问题
 - v-bind:class="{active: isActive}" 实效
+
+### VueRouter

@@ -7,39 +7,73 @@
           <img :src="ban.picUrl"  />
         </mu-carousel-item>
       </mu-carousel>
-      <icon-item></icon-item>
-      <div class="re-content">
-        <h2 class="re-title">
-          <span>推荐歌单</span>
-          <mu-icon value="keyboard_arrow_right" style="vertical-align:middle"></mu-icon>
-        </h2>
-        <mu-row gutter>
-          <mu-col span="4" v-for="(item, index) in SongList" :key="index">
-            <router-link tag="div"
-            :to="{ name: 'SongListDetail', params: {id:item.id} }">
-              <img :src="item.picUrl" alt="">
-              <div class="re-name">
-                {{item.name}}
-              </div>
-            </router-link>
-          </mu-col>
-        </mu-row>
+      <div style="background-color:#fff">
+        <icon-item></icon-item>
+        <div class="re-content">
+          <card :content="SongList"></card>
+          <card :content="NewSong"></card>
+          <card :content='RadioList'></card>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import IconItem from "./IconItem"
+import api from "../../api/index"
+import Card from "./Card"
 export default {
-  props: {
-    banners: {
-      type: Array,
-      defalut: []
-    },
-    SongList: {
-      type: Array,
-      default: []
+  components: {
+    IconItem,
+    Card
+  },
+  data() {
+    return {
+      banners: [],
+      SongList: {
+        title: "推荐歌单",
+        list: []
+      },
+      RadioList: {
+        title: '推荐电台',
+        list: []
+      },
+      NewSong: {
+        title: '最新音乐',
+        list: []
+      }
     }
+  },
+  methods: {
+    getData: function(){
+      api.getRecommendBanner()
+      .then((res) => {
+        let dataResult = res.data.banners
+        this.banners = dataResult
+      })
+      .catch((err) => console.log(err)),
+      api.getRecommendSongList()
+      .then((res) => {
+        let dataResult = res.data.result.slice(0, 6)
+        this.SongList.list = dataResult
+      })
+      api.getRecommendRadio()
+      .then((res) => {
+        let dataResult = res.data.result.slice(0, 6)
+        this.RadioList.list = dataResult
+      })
+      api.getNewSong()
+      .then((res) => {
+        let dataResult = res.data.result.slice(0, 6)
+        this.NewSong.list = dataResult
+        console.log(this.NewSong)
+      })
+    }
+  },
+  mounted: function(){
+    console.log('0000')
+    this.getData()
   }
 }
 </script>
@@ -55,21 +89,6 @@ export default {
     padding: 10px 2% 0 2%
     margin-top: 20px
     border-top: 1px solid $color-border
-    img
-      max-width: 100%
-    .re-name
-      font-size: 12px
-      margin-bottom: 10px
-      overflow:hidden
-      text-overflow:ellipsis
-      display:-webkit-box
-      -webkit-box-orient:vertical
-      -webkit-line-clamp:2
-    .re-title
-      height: 30px
-      line-height: 30px
-      span
-        vertical-align: middle
   .banner
     width: 96%
     height: 140px
@@ -78,10 +97,10 @@ export default {
     img
       max-width: 100%
   .bg-color
-    background-color: $color-background
+    background-color: #fff
     width: 100%
-    height: 120px
+    height: 110px
     position: absolute
-    top: -1px
+    top: 100px
     z-index: -1
 </style>

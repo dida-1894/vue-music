@@ -3,6 +3,8 @@ import axios from 'axios'
 const RecommendBanner = 'http://musicapi.ashyang.cn/banner'
 const RecommendSongList = 'http://musicapi.ashyang.cn/personalized'
 const SongListDetail = 'http://musicapi.ashyang.cn/playlist/detail'
+const RecommendRadio = 'http://musicapi.ashyang.cn/personalized/djprogram'
+const NewSong = 'http://musicapi.ashyang.cn/personalized/newsong'
 
 export default {
   getRecommendBanner(){
@@ -17,5 +19,11 @@ export default {
         id:id
       }
     })
+  },
+  getRecommendRadio(){
+    return axios.get(RecommendRadio)
+  },
+  getNewSong(){
+    return axios.get(NewSong)
   }
 }
