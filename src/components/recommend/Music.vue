@@ -4,13 +4,13 @@
       <div class="bg-color"></div>
       <mu-carousel hide-controls class="banner">
         <mu-carousel-item v-for = "(ban,index) in banners" :key="index">
-          <img :src="ban.picUrl"  />
+          <img v-lazy="ban.picUrl"  />
         </mu-carousel-item>
       </mu-carousel>
       <div style="background-color:#fff">
         <icon-item></icon-item>
         <div class="re-content">
-          <card :content="SongList"></card>
+          <card @goToSonglistDetail="goToSonglistDetail" :content="SongList"></card>
           <card :content="NewSong"></card>
           <card :content='RadioList'></card>
         </div>
@@ -23,6 +23,7 @@
 import IconItem from "./IconItem"
 import api from "../../api/index"
 import Card from "./Card"
+import {mapMutations} from 'vuex'
 export default {
   components: {
     IconItem,
@@ -46,6 +47,19 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      setSonglist: 'SET_SONGLIST'
+    }),
+    goToSonglistDetail:function(id){
+      console.log(id)
+      api.getSongListDetail(id)
+        .then((res) => {
+          this.$router.push({
+            path:`/palylist/detail/${id}`
+          })
+          this.setSonglist(res.data)
+        })
+    },
     getData: function(){
       api.getRecommendBanner()
       .then((res) => {
@@ -67,7 +81,6 @@ export default {
       .then((res) => {
         let dataResult = res.data.result.slice(0, 6)
         this.NewSong.list = dataResult
-        console.log(this.NewSong)
       })
     }
   },

@@ -10,7 +10,7 @@
     </detail-header>
     <div class="bg">
     </div>
-    <img :src="coverImgUrl" class="bg-img" />
+    <img v-lazy="coverImgUrl" class="bg-img" />
     <b-scroll
     :data = "[tracks,headMsg]"
     :listenScroll = "true"
@@ -20,12 +20,12 @@
         <mu-container class="head-msg">
           <mu-row gutter>
             <mu-col span="5" class="cover-img">
-              <img :src="coverImgUrl" />
+              <img v-lazy="coverImgUrl" />
             </mu-col>
             <mu-col span="7">
               <div class="name">{{headMsg.name}}</div>
               <div class="creator">
-                <img :src="headMsg.avatarUrl" alt="" />
+                <img v-lazy="headMsg.avatarUrl" alt="" />
                 <span>{{headMsg.nickname}}</span>
                 <mu-icon
                 value="keyboard_arrow_right"
@@ -88,12 +88,21 @@
 import DetailHeader from 'components/header/DetailHeader'
 import MainFooter from 'components/header/MainFooter'
 import BScroll from 'components/header/Scroll'
+import {mapGetters} from 'vuex'
 import api from '../../api/index'
 export default {
   components:{
     DetailHeader,
     MainFooter,
     BScroll
+  },
+  computed: {
+    ...mapGetters([
+      'songlist'
+    ])
+  },
+  created(){
+    console.log(this.songlist)
   },
   data() {
     return {
@@ -154,7 +163,6 @@ export default {
         this.tracks.trackCount = dataResult.trackCount
         this.tracks.playlist = dataResult.tracks
         this.tracks.subscribedCount = dataResult.subscribedCount
-        console.log(dataResult.tracks)
       })
     }
   }

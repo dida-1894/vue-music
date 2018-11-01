@@ -8,7 +8,7 @@
       <mu-col span="4" v-for="(item, index) in content.list" :key="index" @click="getDetail(item)">
         <!-- <router-link tag="div"
         :to="{ name: 'SongListDetail', params: {id:item.id} }"> -->
-          <img :src="item.picUrl" alt="">
+          <img v-lazy="item.picUrl" alt="">
           <div class="re-name">
             {{item.name}}
           </div>
@@ -28,9 +28,9 @@ export default {
   },
   methods: {
     getDetail(item) {
-      switch (item.id) {
+      switch (item.type) {
         case 0:
-          console.log('SongList')
+          this.$emit('goToSonglistDetail', item.id)
           break
         case 1:
           console.log('Radio')

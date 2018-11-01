@@ -21,7 +21,7 @@ export default new Router({
       component: Singer
     },
     {
-      path: "/palylist/detail",
+      path: "/palylist/detail/:id",
       name: "SongListDetail",
       component: SongListDetail
     },
