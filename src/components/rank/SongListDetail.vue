@@ -11,42 +11,54 @@
     <div class="bg">
     </div>
     <img :src="coverImgUrl" class="bg-img" />
-    <mu-container class="head-msg">
-      <mu-row gutter>
-        <mu-col span="5" class="cover-img">
-          <img :src="coverImgUrl" />
-        </mu-col>
-        <mu-col span="7">
-          <div class="name">{{headMsg.name}}</div>
-          <div class="creator">
-            <img :src="headMsg.avatarUrl" alt="" />
-            <span>{{headMsg.nickname}}</span>
-            <mu-icon
-              value="keyboard_arrow_right"
-              size = "18"
-              class="icon"
-              color = "#fff"></mu-icon>
-          </div>
-        </mu-col>
-      </mu-row>
-      <mu-row gutter style="color:#fff;text-align:center;margin-top:20px">
-        <mu-col v-for="(item,index) in icons" :key="index" span="3">
-          <mu-icon
-            color="#fff"
-            size = "30"
-            :value="item.icon"></mu-icon>
-          <div>{{item.name}}</div>
-        </mu-col>
-      </mu-row>
-    </mu-container>
+    <mu-row class="track-head fiexd" ref="trackHead" :class="{holdTitle: isHoldTitle}">
+      <mu-col span="1" style="vertical-align:middle;padding:5.5px 0px;background-color: #ffffff;border-top-left-radius: 10px">
+        <mu-icon value="play_circle_filled_white"></mu-icon>
+      </mu-col>
+      <mu-col span="7" style="vertical-align:middle;padding:10px 0px;background-color: #ffffff">
+        播放全部
+        <span style="color:#aaa">（共{{tracks.trackCount}}首）</span>
+      </mu-col>
+      <mu-col span="4" style="background-color:#d32f2f;color:#fff;text-align:center;vertical-align:middle;border-top-right-radius:10px;padding:10px 0px">
+        收藏（{{tracks.subscribedCount}}）
+      </mu-col>
+    </mu-row>
     <b-scroll
     :data = "[tracks]"
     :listenScroll = "true"
     @scroll = "scroll"
     class="wrapper">
       <div class="content">
+        <mu-container class="head-msg">
+          <mu-row gutter>
+            <mu-col span="5" class="cover-img">
+              <img :src="coverImgUrl" />
+            </mu-col>
+            <mu-col span="7">
+              <div class="name">{{headMsg.name}}</div>
+              <div class="creator">
+                <img :src="headMsg.avatarUrl" alt="" />
+                <span>{{headMsg.nickname}}</span>
+                <mu-icon
+                  value="keyboard_arrow_right"
+                  size = "18"
+                  class="icon"
+                  color = "#fff"></mu-icon>
+              </div>
+            </mu-col>
+          </mu-row>
+          <mu-row gutter style="color:#fff;text-align:center;margin-top:20px">
+            <mu-col v-for="(item,index) in icons" :key="index" span="3">
+              <mu-icon
+                color="#fff"
+                size = "30"
+                :value="item.icon"></mu-icon>
+              <div>{{item.name}}</div>
+            </mu-col>
+          </mu-row>
+        </mu-container>
         <div class="tracks">
-          <mu-row class="track-head" :class="{track_head_hold:holdTitle}">
+          <mu-row class="track-head">
             <mu-col span="1" style="vertical-align:middle;padding:9px 0px">
               <mu-icon value="play_circle_filled_white"></mu-icon>
             </mu-col>
@@ -123,25 +135,10 @@ export default {
     coverImgUrl() {
       return this.songlist.playlist.coverImgUrl
     }
-    // getDate: function(){
-    //     let dataResult = this.songlist.playlist
-    //     this.coverImgUrl = dataResult.coverImgUrl
-    //     this.headMsg.name = dataResult.name
-    //     this.headMsg.description = dataResult.description
-    //     this.headMsg.commenCount = dataResult.commenCount
-    //     this.headMsg.shareCount = dataResult.shareCount
-    //     this.headMsg.userId = dataResult.userId
-    //     this.headMsg.avatarUrl = dataResult.creator.avatarUrl
-    //     this.headMsg.nickname = dataResult.creator.nickname
-    //     this.headMsg.tags = dataResult.creator.tags
-    //     this.tracks.trackCount = dataResult.trackCount
-    //     this.tracks.playlist = dataResult.tracks
-    //     this.tracks.subscribedCount = dataResult.subscribedCount
-    // }
   },
   data() {
     return {
-        holdTitle: false,
+        isHoldTitle: true,
         icons: [
           {
             icon: "chat",
@@ -160,7 +157,19 @@ export default {
             icon: "check_box",
             name: "多选"
           }
-        ]
+        ],
+        scrollY: 0
+    }
+  },
+  watch: {
+    scrollY: function (){
+      if(this.scrollY < -257){
+        this.isHoldTitle = false
+        console.log('aaa')
+      }else {
+        this.isHoldTitle = true
+      }
+      console.log(this.scrollY)
     }
   },
   methods: {
@@ -168,9 +177,7 @@ export default {
       this.$router.go(-1)
     },
     scroll(pos){
-      if (pos.y < -238) {
-          this.holdTitle = true
-      }
+      this.scrollY = pos.y
     },
   }
 }
@@ -199,36 +206,45 @@ export default {
       max-width: 100%
       max-height: 100%
       -webkit-filter: blur(20px)
-    .head-msg
-      margin-top: 10px
-      .row.funct-icon
-        text-align: center
-        color: $color-text
-      .cover-img
-        img
-          max-width: 100%
-          max-height: 100%
-          border-radius: 5px
-      .name
-        margin-top: 20px
-        color: $color-text
-        font-weight: $font-weight-title
-        font-size: $font-size-small-medium-x
-      .creator
-        margin-top: 20px
-        img
-          width: 30px
-          height: 30px
-          border-radius: 50%
-          vertical-align: middle
-        span
-          color: $color-text
-        .icon
-          vertical-align: middle
+    .fiexd
+      width 100%
+      position fixed
+      z-index 20
+      top 50px
+    .holdTitle
+      display none
     .wrapper
       height: calc(100% - 102px)
       width: 100%
+      overflow: hidden
+      position: relative
       .content
+        .head-msg
+          margin-top: 10px
+          .row.funct-icon
+            text-align: center
+            color: $color-text
+          .cover-img
+            img
+              max-width: 100%
+              max-height: 100%
+              border-radius: 5px
+          .name
+            margin-top: 20px
+            color: $color-text
+            font-weight: $font-weight-title
+            font-size: $font-size-small-medium-x
+          .creator
+            margin-top: 20px
+            img
+              width: 30px
+              height: 30px
+              border-radius: 50%
+              vertical-align: middle
+            span
+              color: $color-text
+            .icon
+              vertical-align: middle
         .tracks
           .track-head
             margin-top: 10px
