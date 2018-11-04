@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="header">
+  <header class="header">
     <mu-container>
       <mu-row>
           <mu-col span="1">
@@ -12,7 +12,7 @@
         </mu-col>
       </mu-row>
     </mu-container>
-  </div>
+  </header>
 </template>
 
 <script>
@@ -27,7 +27,10 @@ export default {
 </script>
 <style lang="stylus" scoped rel="stylesheet/stylus">
 @import "~common/stylus/variable.styl"
-.header
+header
+  position fixed
+  z-index: 999
+  width 100%
   background-color: $background-color-d
   h2
     color: $color-text
