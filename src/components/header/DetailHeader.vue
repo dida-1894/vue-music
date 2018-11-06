@@ -4,7 +4,6 @@
       <mu-row>
           <mu-col span="1">
             <slot name="leftIcon">
-              <!-- <mu-icon value="keyboard_arrow_left" size="40" color="#fff" onclick="javascript:history.back(-1);"></mu-icon> -->
             </slot>
           </mu-col>
         <mu-col span="10">
@@ -29,7 +28,7 @@ export default {
 @import "~common/stylus/variable.styl"
 header
   position fixed
-  z-index: 999
+  z-index: 99
   width 100%
   background-color: $background-color-d
   h2

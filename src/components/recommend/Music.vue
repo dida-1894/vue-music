@@ -85,7 +85,6 @@ export default {
     }
   },
   mounted: function(){
-    console.log('0000')
     this.getData()
   }
 }

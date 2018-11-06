@@ -25,7 +25,9 @@
         class="wrapper"
         refs="wrappers">
         <div class="content">
-          <song-list :tracks="tracks"></song-list>
+          <song-list
+            @playSong="playSong"
+            :tracks="tracks"></song-list>
         </div>
       </b-scroll>
     <main-footer></main-footer>
@@ -38,7 +40,8 @@ import MainFooter from 'components/header/MainFooter'
 import BScroll from 'components/header/Scroll'
 import HeadMsg from 'components/header/HeadMsg'
 import SongList from 'components/header/SongList'
-import {mapGetters} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
+import {selectPlay} from "../../store/actions"
 export default {
   components:{
     DetailHeader,
@@ -100,6 +103,16 @@ export default {
       // let head = this.$ref.scrollTop
       this.scrollY = pos.y
     },
+    ...mapActions([
+      'selectPlay'
+    ]),
+    playSong(song, index){
+      console.log(index)
+      this.selectPlay({
+        list: this.songlist.playlist.tracks,
+        index
+      })
+    }
   },
   created() {
     setTimeout(() => {

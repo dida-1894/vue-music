@@ -21,5 +21,5 @@ footer
   overflow: hidden
   position: fixed
   bottom: 0px
-  z-index 9999
+  z-index 99
 </style>

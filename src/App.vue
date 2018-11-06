@@ -18,4 +18,7 @@ export default {
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
+  #app
+    position relative
+    overflow hidden
 </style>

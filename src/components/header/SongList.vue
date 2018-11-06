@@ -1,6 +1,11 @@
 <template>
   <div class="tracks">
-    <mu-row class="playlist" align-items="center" v-for="(play,index) in tracks.playlist" :key="index">
+    <mu-row
+      class="playlist"
+      align-items="center"
+      v-for="(play,index) in tracks.playlist"
+      @click="playSong(play, index)"
+      :key="index">
       <mu-col class="list-icon" span="1">{{index + 1}}</mu-col>
       <mu-col span="9">
         <div class="music-name">
@@ -31,7 +36,11 @@
           default: null
         }
       },
-
+      methods: {
+        playSong(song, index){
+          this.$emit('playSong', song, index)
+        }
+      }
     }
 </script>
 
