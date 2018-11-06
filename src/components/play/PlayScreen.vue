@@ -1,5 +1,6 @@
 <template>
-    <div class="PlayScreen" :v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
+    <div class="PlayScreen" v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
+      <div class="layer"></div>
       <!--<img :src="currentSong.al.picUrl" alt="">-->
       <detail-header :HeadLine="currentSong.al.name">
         <mu-icon
@@ -140,7 +141,6 @@
   .PlayScreen
     width 100%
     height 100%
-    background-color #616161
     color #eeeeee
     position absolute
     top 0px
@@ -148,6 +148,13 @@
     overflow hidden
     background-size cover
     background-position center
+    .layer
+      width 100%
+      height 100%
+      background-color rgba(0, 0, 0, .8)
+      position absolute
+      top 0
+      z-index 0
     .normal-player
       width 100%
       padding-top 50px
