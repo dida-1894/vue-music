@@ -2,7 +2,7 @@
     <div class="PlayScreen" v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
       <div class="layer"></div>
       <!--<img :src="currentSong.al.picUrl" alt="">-->
-      <detail-header :HeadLine="currentSong.al.name">
+      <detail-header :HeadLine="currentSong.name">
         <mu-icon
           value="keyboard_arrow_left"
           color="#fff"
@@ -18,25 +18,58 @@
               align-self="center"
               offset="3"
               :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
-              class="center-img"></mu-col>
+              :class="palyCd">
+            </mu-col>
           </mu-row>
           <mu-row style="text-align: center;">
             <mu-col gutter span="3" v-for="(icon,index) in icons" :key="index">
               <mu-icon :value="icon.value"></mu-icon>
             </mu-col>
           </mu-row>
-          <mu-row style="margin: 10px 0">
+          <mu-row style="margin: 10px 0" align-content="center">
             <audio
               ref="audio"
-              :src=" 'http://music.163.com/song/media/outer/url?id=' + currentSong.al.id + '.mp3'" ></audio>
+              @canplay="ready"
+              @error="error"
+              @timeupdate="UpdateTime"
+              :src=" 'http://music.163.com/song/media/outer/url?id=' + currentSong.id + '.mp3'" ></audio>
+            <!--<h1>{{format(currentTime)}}</h1>-->
+            <mu-col span="2" style="font-size: 12px;text-align: center">
+              {{ format(currentTime) }}
+            </mu-col>
+            <mu-col span="8" style="position: relative">
+              <div ref="progressBar">
+                <mu-linear-progress
+                  mode="determinate"
+                  style="margin-top: 7px"
+                  color="#eee"
+                  :value="progress"></mu-linear-progress>
+              </div>
+              <div
+                @touchstart.prevent="progressTouchStart"
+                @touchmove.prevent="progressTouchMove"
+                @touchend="progressTouchEnd"
+                class="progress-ball"
+                style="left: 0px"
+                ref="progressBall"></div>
+            </mu-col>
+            <mu-col span="2" style="font-size: 12px;text-align: center">
+              {{ format(currentSong.dt) }}
+            </mu-col>
           </mu-row>
           <mu-row style="text-align: center; margin-bottom: 10px">
             <mu-col
-              v-for="(icon,index) in playIcons"
+              v-for="(icon,index) in featureIcons"
+              @click="playFunct(index)"
               align-self="center"
               :span="icon.width"
               :key="index">
               <mu-icon
+                v-if="index === 2"
+                :size= "icon.size"
+                :value="playIcon"></mu-icon>
+              <mu-icon
+                v-else
                 :size= "icon.size"
                 :value="icon.value"></mu-icon>
             </mu-col>
@@ -48,6 +81,7 @@
 
 <script>
   import DetailHeader from 'components/header/DetailHeader'
+  import api from '../../api/index'
   import {mapGetters, mapMutations} from 'vuex'
     export default {
       name: "PlayScreen",
@@ -55,14 +89,26 @@
         DetailHeader
       },
       computed: {
+        palyCd() {
+          return this.playing? 'center-img playing' : 'center-img playing pause'
+        },
+        playIcon() {
+          return this.playing? 'pause_circle_outline' : 'play_circle_outline'
+        },
         ...mapGetters([
           'fullScreen',
           'playlist',
-          'currentSong'
+          'currentSong',
+          'currentIndex',
+          'playing'
         ])
       },
       data(){
         return {
+          progress: 0,
+          progressWidth: 0,
+          songReady: false,
+          currentTime: 0,
           msg: '歌曲名',
           icons: [
             {
@@ -82,7 +128,7 @@
               value: 'more_vert'
             }
           ],
-          playIcons: [
+          featureIcons: [
             {
               name: 'mode',
               value: 'playlist_play',
@@ -117,22 +163,145 @@
         }
       },
       methods: {
+        progressTouchEnd() {
+          console.log('end')
+          this.touch.initiated = false
+        },
+        progressTouchStart(e) {
+          console.log('start')
+          this.touch.initiated = true
+          this.touch.startX = e.touches[0].pageX
+          this.touch.left = this.$refs.progressBall.style.left
+          // console.log(this.touch.left + '    start')
+        },
+        progressTouchMove(e) {
+          if (!this.touch.initiated) {
+            return
+          }
+          const deltaX = e.touches[0].pageX - this.touch.startX
+          const offsetWidth = Math.min(this.progressWidth, (parseInt(this.touch.left) + deltaX))
+          console.log(this.progressWidth)
+          console.log(parseInt(this.touch.left) + deltaX)
+          this.progress = offsetWidth / this.progressWidth * 100
+          this.$refs.progressBall.style.left = offsetWidth + 'px'
+        },
         back() {
           // console.log('back')
           this.setFullScreen(false)
-          console.log(this.fullScreen)
+        },
+        UpdateTime(e) {
+          this.currentTime = e.target.currentTime
+        },
+        format(interval) {
+          if (interval > 1000){
+            interval = interval / 1000
+          } else {
+            interval = interval | 0
+          }
+          const minute = interval / 60 | 0
+          const second = interval % 60 | 0
+          return `${minute} : ${this.pad(second, 2)}`
+        },
+        pad(num, n) {
+          let len = num.toString().length
+          while (len < n) {
+            num = '0' + num
+            len++
+          }
+          return num
+        },
+        playFunct(index) {
+          switch (index) {
+            case 0:
+              console.log('mode')
+                  break
+            case 1:
+              //pre
+              if (!this.songReady) {
+                return
+              }
+              let playIndex = this.currentIndex - 1
+              if (playIndex === -1) {
+                playIndex = this.playlist.length - 1
+              }
+              this.setCurrentIndex(playIndex)
+              if (!this.playing){
+                this.setPlayingState(!this.playing)
+                console.log(this.playing)
+              }
+              this.songReady = false
+                  break
+            case 2:
+              //taggolePlaying
+              this.setPlayingState(!this.playing)
+                  break
+            case 3:
+              //next
+              if (!this.songReady) {
+                return
+              }
+              playIndex = this.currentIndex + 1
+              if (playIndex === this.playlist.length) {
+                playIndex = 0
+              }
+              this.setCurrentIndex(playIndex)
+              if (!this.playing){
+                this.setPlayingState(!this.playing)
+              }
+              this.songReady = false
+                  break
+            case 4:
+              console.log('playitem')
+                  break
+          }
+        },
+        ready() {
+          this.songReady = true
+        },
+        error() {
+          this.songReady = true
         },
         ...mapMutations({
-          setFullScreen: 'SET_FULL_SCREEN'
+          setFullScreen: 'SET_FULL_SCREEN',
+          setPlayingState: 'SET_PLAYING_STATE',
+          setCurrentIndex: 'SET_CURRENT_INDEX'
         })
       },
+      watch: {
+        currentSong() {
+          this.$nextTick(() => {
+            this.$refs.audio.play()
+          })
+        },
+        playing(newPlaying) {
+          this.$nextTick(() => {
+            const audio = this.$refs.audio
+            newPlaying? audio.play() : audio.pause()
+          })
+        },
+        currentTime(newTime) {
+          if (newTime >= 0 && !this.touch.initiated) {
+            console.log('iii')
+            this.progress = ( newTime / this.currentSong.dt ) * 100000
+            this.$refs.progressBall.style.left = this.progress / 100 * this.progressWidth + 'px'
+          }
+        },
+      },
       created() {
-        // console.log(this.playlist)
+
         this.$nextTick(() => {
-          console.log(this.$refs.audio)
-          this.$refs.audio.play()
+          this.progressWidth = this.$refs.progressBar.clientWidth
+          this.touch = {}
+          this.touch.initiated = false
+          // api.getMusicPlayUrl(this.currentSong.al.id)
+          //   .then((res) => {
+          //     console.log(res)
+          //   })
+          // this.$refs.audio.play()
+          console.log(this.currentSong)
         })
-        console.log(this.currentSong.al)
+      },
+      mounted(){
       }
     }
 </script>
@@ -146,6 +315,7 @@
     top 0px
     z-index 100
     overflow hidden
+    background-color #616161
     background-size cover
     background-position center
     .layer
@@ -166,4 +336,20 @@
         border-radius 50%
         background-position center
         background-size contain
+      .playing
+        animation rotate 20s linear infinite
+      .pause
+        animation-play-state: paused
+      .progress-ball
+        width 10px
+        height 10px
+        border-radius 50%
+        background-color #eeeeee
+        position absolute
+        top 4px
+  @keyframes rotate
+    0%
+      transform rotate(0)
+    100%
+      transform rotate(360deg)
 </style>

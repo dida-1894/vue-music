@@ -4,7 +4,7 @@
       <div class="bg-color"></div>
       <mu-carousel hide-controls class="banner">
         <mu-carousel-item v-for = "(ban,index) in banners" :key="index">
-          <img v-lazy="ban.picUrl"  />
+          <img v-lazy="ban.imageUrl"  />
         </mu-carousel-item>
       </mu-carousel>
       <div style="background-color:#fff">
@@ -65,8 +65,9 @@ export default {
       .then((res) => {
         let dataResult = res.data.banners
         this.banners = dataResult
+        console.log(this.banners )
       })
-      .catch((err) => console.log(err)),
+      .catch((err) => console.log(err))
       api.getRecommendSongList()
       .then((res) => {
         let dataResult = res.data.result.slice(0, 6)

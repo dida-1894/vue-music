@@ -5,6 +5,7 @@ const RecommendSongList = 'http://musicapi.ashyang.cn/personalized'
 const SongListDetail = 'http://musicapi.ashyang.cn/playlist/detail'
 const RecommendRadio = 'http://musicapi.ashyang.cn/personalized/djprogram'
 const NewSong = 'http://musicapi.ashyang.cn/personalized/newsong'
+const MusicPlayUrl = 'http://musicapi.ashyang.cn/song/url'
 
 export default {
   getRecommendBanner(){
@@ -16,6 +17,13 @@ export default {
   getSongListDetail(id){
     return axios.get(SongListDetail, {
       params:{
+        id:id
+      }
+    })
+  },
+  getMusicPlayUrl(id){
+    return axios.get(MusicPlayUrl, {
+      params: {
         id:id
       }
     })
