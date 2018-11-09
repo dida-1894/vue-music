@@ -6,22 +6,30 @@ const SongListDetail = 'http://musicapi.ashyang.cn/playlist/detail'
 const RecommendRadio = 'http://musicapi.ashyang.cn/personalized/djprogram'
 const NewSong = 'http://musicapi.ashyang.cn/personalized/newsong'
 const MusicPlayUrl = 'http://musicapi.ashyang.cn/song/url'
+const SongLyric = 'http://musicapi.ashyang.cn/lyric'
 
 export default {
-  getRecommendBanner(){
-    return axios.get(RecommendBanner)
-  },
-  getRecommendSongList(){
-    return axios.get(RecommendSongList)
-  },
-  getSongListDetail(id){
-    return axios.get(SongListDetail, {
-      params:{
-        id:id
+  getSongLyric(id) {
+    return axios.get(SongLyric, {
+      params: {
+        id: id
       }
     })
   },
-  getMusicPlayUrl(id){
+  getRecommendBanner() {
+    return axios.get(RecommendBanner)
+  },
+  getRecommendSongList() {
+    return axios.get(RecommendSongList)
+  },
+  getSongListDetail(id) {
+    return axios.get(SongListDetail, {
+      params:{
+        id: id
+      }
+    })
+  },
+  getMusicPlayUrl(id) {
     return axios.get(MusicPlayUrl, {
       params: {
         id:id

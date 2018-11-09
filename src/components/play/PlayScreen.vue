@@ -1,7 +1,6 @@
 <template>
     <div class="PlayScreen" v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
-      <div class="layer"></div>
-      <!--<img :src="currentSong.al.picUrl" alt="">-->
+      <div class="layer"  @click.native="showLyric"></div>
       <detail-header :HeadLine="currentSong.name">
         <mu-icon
           value="keyboard_arrow_left"
@@ -12,15 +11,21 @@
       </detail-header>
       <div class="normal-player">
         <mu-container style="height: 100%" class="flex-wrapper">
-          <mu-row fill style=" height: calc(100% - 129px); overflow: hidden">
-            <mu-col
-              span="6"
-              align-self="center"
-              offset="3"
-              :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
-              :class="palyCd">
-            </mu-col>
-          </mu-row>
+          <div style=" height: calc(100% - 129px); overflow: hidden" @click.native="showLyric">
+            <mu-row style="height: 100%">
+              <mu-col
+                v-show="!isLyric"
+                span="6"
+                align-self="center"
+                offset="3"
+                :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
+                :class="playCd">
+              </mu-col>
+              <mu-col v-show="isLyric">
+                Lyric
+              </mu-col>
+            </mu-row>
+          </div>
           <mu-row style="text-align: center;">
             <mu-col gutter span="3" v-for="(icon,index) in icons" :key="index">
               <mu-icon :value="icon.value"></mu-icon>
@@ -32,13 +37,14 @@
               @canplay="ready"
               @error="error"
               @timeupdate="UpdateTime"
+              @ended="endSong"
               :src=" 'http://music.163.com/song/media/outer/url?id=' + currentSong.id + '.mp3'" ></audio>
             <!--<h1>{{format(currentTime)}}</h1>-->
             <mu-col span="2" style="font-size: 12px;text-align: center">
               {{ format(currentTime) }}
             </mu-col>
             <mu-col span="8" style="position: relative">
-              <div ref="progressBar">
+              <div ref="progressBar" @click="clickProgressBar">
                 <mu-linear-progress
                   mode="determinate"
                   style="margin-top: 7px"
@@ -50,7 +56,7 @@
                 @touchmove.prevent="progressTouchMove"
                 @touchend="progressTouchEnd"
                 class="progress-ball"
-                style="left: 0px"
+                style=""
                 ref="progressBall"></div>
             </mu-col>
             <mu-col span="2" style="font-size: 12px;text-align: center">
@@ -65,7 +71,12 @@
               :span="icon.width"
               :key="index">
               <mu-icon
-                v-if="index === 2"
+                :value="playMode"
+                :size= "icon.size"
+                v-if="index === 0">
+              </mu-icon>
+              <mu-icon
+                v-else-if="index === 2"
                 :size= "icon.size"
                 :value="playIcon"></mu-icon>
               <mu-icon
@@ -82,14 +93,19 @@
 <script>
   import DetailHeader from 'components/header/DetailHeader'
   import api from '../../api/index'
+  import {playModeConf} from '../../common/js/config'
   import {mapGetters, mapMutations} from 'vuex'
+  import {shuffle} from '../../common/js/util'
     export default {
       name: "PlayScreen",
       components: {
         DetailHeader
       },
       computed: {
-        palyCd() {
+        playMode() {
+          return this.mode === playModeConf.sequence ? 'repeat' : this.mode === playModeConf.loop ? 'repeat_one' : 'shuffle'
+        },
+        playCd() {
           return this.playing? 'center-img playing' : 'center-img playing pause'
         },
         playIcon() {
@@ -100,11 +116,14 @@
           'playlist',
           'currentSong',
           'currentIndex',
-          'playing'
+          'playing',
+          'mode',
+          'sequenceList'
         ])
       },
       data(){
         return {
+          isLyric: false,
           progress: 0,
           progressWidth: 0,
           songReady: false,
@@ -163,8 +182,13 @@
         }
       },
       methods: {
+        showLyric() {
+          console.log('lyric')
+          this.isLyric = !this.isLyric
+        },
         progressTouchEnd() {
           console.log('end')
+          this.$refs.audio.currentTime = (this.currentSong.dt / 1000) * (this.progress / 100)
           this.touch.initiated = false
         },
         progressTouchStart(e) {
@@ -172,7 +196,7 @@
           this.touch.initiated = true
           this.touch.startX = e.touches[0].pageX
           this.touch.left = this.$refs.progressBall.style.left
-          // console.log(this.touch.left + '    start')
+          // console.log(this.touch.left + '   start')
         },
         progressTouchMove(e) {
           if (!this.touch.initiated) {
@@ -180,10 +204,15 @@
           }
           const deltaX = e.touches[0].pageX - this.touch.startX
           const offsetWidth = Math.min(this.progressWidth, (parseInt(this.touch.left) + deltaX))
-          console.log(this.progressWidth)
-          console.log(parseInt(this.touch.left) + deltaX)
+          // console.log(this.progressWidth)
+          // console.log(parseInt(this.touch.left) + deltaX)
           this.progress = offsetWidth / this.progressWidth * 100
           this.$refs.progressBall.style.left = offsetWidth + 'px'
+        },
+        clickProgressBar(e) {
+          this.progress = e.offsetX / this.progressWidth * 100
+          this.$refs.progressBall.style.left = e.offsetX + 'px'
+          this.$refs.audio.currentTime = (this.currentSong.dt / 1000) * (this.progress / 100)
         },
         back() {
           // console.log('back')
@@ -210,26 +239,26 @@
           }
           return num
         },
+        changePlayMode() {
+          console.log('mode')
+          let changeMode = (this.mode + 1) % 3
+          let list = null
+          if (changeMode === playModeConf.random) {
+            list = shuffle(this.sequenceList)
+          } else {
+            list = this.sequenceList
+          }
+          this.setPlaylist(list)
+          this.setPlayMode(changeMode)
+        },
         playFunct(index) {
           switch (index) {
             case 0:
-              console.log('mode')
+              this.changePlayMode()
                   break
             case 1:
               //pre
-              if (!this.songReady) {
-                return
-              }
-              let playIndex = this.currentIndex - 1
-              if (playIndex === -1) {
-                playIndex = this.playlist.length - 1
-              }
-              this.setCurrentIndex(playIndex)
-              if (!this.playing){
-                this.setPlayingState(!this.playing)
-                console.log(this.playing)
-              }
-              this.songReady = false
+              this.preSong()
                   break
             case 2:
               //taggolePlaying
@@ -237,23 +266,41 @@
                   break
             case 3:
               //next
-              if (!this.songReady) {
-                return
-              }
-              playIndex = this.currentIndex + 1
-              if (playIndex === this.playlist.length) {
-                playIndex = 0
-              }
-              this.setCurrentIndex(playIndex)
-              if (!this.playing){
-                this.setPlayingState(!this.playing)
-              }
-              this.songReady = false
+              this.nextSong()
                   break
             case 4:
               console.log('playitem')
                   break
           }
+        },
+        nextSong() {
+          if (!this.songReady) {
+            return
+          }
+          let playIndex = this.currentIndex + 1
+          if (playIndex === this.playlist.length) {
+            playIndex = 0
+          }
+          this.setCurrentIndex(playIndex)
+          if (!this.playing){
+            this.setPlayingState(!this.playing)
+          }
+          this.songReady = false
+        },
+        preSong() {
+          if (!this.songReady) {
+            return
+          }
+          let playIndex = this.currentIndex - 1
+          if (playIndex === -1) {
+            playIndex = this.playlist.length - 1
+          }
+          this.setCurrentIndex(playIndex)
+          if (!this.playing){
+            this.setPlayingState(!this.playing)
+            console.log(this.playing)
+          }
+          this.songReady = false
         },
         ready() {
           this.songReady = true
@@ -261,10 +308,20 @@
         error() {
           this.songReady = true
         },
+        endSong() {
+          if (this.mode === playModeConf.loop ) {
+            this.$refs.audio.currentTime = 0
+            this.$refs.audio.play()
+          } else {
+            this.nextSong()
+          }
+        },
         ...mapMutations({
           setFullScreen: 'SET_FULL_SCREEN',
           setPlayingState: 'SET_PLAYING_STATE',
-          setCurrentIndex: 'SET_CURRENT_INDEX'
+          setCurrentIndex: 'SET_CURRENT_INDEX',
+          setPlayMode: 'SET_PLAY_MODE',
+          setPlaylist: 'SET_PLAYLIST'
         })
       },
       watch: {
@@ -281,27 +338,32 @@
         },
         currentTime(newTime) {
           if (newTime >= 0 && !this.touch.initiated) {
-            console.log('iii')
             this.progress = ( newTime / this.currentSong.dt ) * 100000
-            this.$refs.progressBall.style.left = this.progress / 100 * this.progressWidth + 'px'
+            this.$refs.progressBall.style.left = `${this.progress / 100 * this.progressWidth}px`
+            // console.log(this.$refs.progressBall.style.left)
           }
         },
       },
       created() {
 
+      },
+      mounted(){
         this.$nextTick(() => {
           this.progressWidth = this.$refs.progressBar.clientWidth
           this.touch = {}
           this.touch.initiated = false
-          // api.getMusicPlayUrl(this.currentSong.al.id)
+          console.log(this.touch)
+          api.getSongLyric(this.currentSong.id)
+            .then((res) => {
+              console.log(res)
+            })
+          // api.getMusicPlayUrl(this.currentSong.id)
           //   .then((res) => {
           //     console.log(res)
           //   })
           // this.$refs.audio.play()
           console.log(this.currentSong)
         })
-      },
-      mounted(){
       }
     }
 </script>
@@ -347,6 +409,7 @@
         background-color #eeeeee
         position absolute
         top 4px
+        transition left 0.3s linear
   @keyframes rotate
     0%
       transform rotate(0)
