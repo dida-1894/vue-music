@@ -1,6 +1,6 @@
 <template>
     <div class="PlayScreen" v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
-      <div class="layer"  @click.native="showLyric"></div>
+      <div class="layer"></div>
       <detail-header :HeadLine="currentSong.name">
         <mu-icon
           value="keyboard_arrow_left"
@@ -11,21 +11,21 @@
       </detail-header>
       <div class="normal-player">
         <mu-container style="height: 100%" class="flex-wrapper">
-          <div style=" height: calc(100% - 129px); overflow: hidden" @click.native="showLyric">
-            <mu-row style="height: 100%">
-              <mu-col
-                v-show="!isLyric"
-                span="6"
-                align-self="center"
-                offset="3"
-                :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
-                :class="playCd">
-              </mu-col>
-              <mu-col v-show="isLyric">
-                Lyric
-              </mu-col>
-            </mu-row>
-          </div>
+          <mu-row style=" height: calc(100% - 129px); overflow: hidden; " @click="showLyric">
+            <mu-col
+              v-show="!isLyric"
+              span="6"
+              align-self="center"
+              offset="3"
+              :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
+              :class="playCd">
+            </mu-col>
+            <mu-col v-show="isLyric">
+              <ul class="lyric-box">
+                <li v-for="(lyric,index) in lyrics"></li>
+              </ul>
+            </mu-col>
+          </mu-row>
           <mu-row style="text-align: center;">
             <mu-col gutter span="3" v-for="(icon,index) in icons" :key="index">
               <mu-icon :value="icon.value"></mu-icon>
@@ -91,6 +91,7 @@
 </template>
 
 <script>
+  import lyricParser from 'lyric-parser'
   import DetailHeader from 'components/header/DetailHeader'
   import api from '../../api/index'
   import {playModeConf} from '../../common/js/config'
@@ -128,6 +129,7 @@
           progressWidth: 0,
           songReady: false,
           currentTime: 0,
+          lyrics: ['暂时没有歌词哟~'],
           msg: '歌曲名',
           icons: [
             {
@@ -183,7 +185,6 @@
       },
       methods: {
         showLyric() {
-          console.log('lyric')
           this.isLyric = !this.isLyric
         },
         progressTouchEnd() {
@@ -355,7 +356,8 @@
           console.log(this.touch)
           api.getSongLyric(this.currentSong.id)
             .then((res) => {
-              console.log(res)
+              this.lyrics = res.data.lrc.lyric
+              console.log(this.lyrics)
             })
           // api.getMusicPlayUrl(this.currentSong.id)
           //   .then((res) => {
@@ -386,7 +388,7 @@
       background-color rgba(0, 0, 0, .8)
       position absolute
       top 0
-      z-index 0
+      z-index -1
     .normal-player
       width 100%
       padding-top 50px
