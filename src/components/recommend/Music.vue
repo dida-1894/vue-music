@@ -65,7 +65,6 @@ export default {
       .then((res) => {
         let dataResult = res.data.banners
         this.banners = dataResult
-        console.log(this.banners )
       })
       .catch((err) => console.log(err))
       api.getRecommendSongList()

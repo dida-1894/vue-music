@@ -32,10 +32,10 @@
       </mu-col>
       <mu-col span="7" style="vertical-align:middle;padding:10px 0px">
         播放全部
-        <span style="color:#aaa">（共{{tracks.trackCount}}首）</span>
+        <span style="color:#aaa">（共{{tracksHead.trackCount}}首）</span>
       </mu-col>
       <mu-col span="4" style="background-color:#d32f2f;color:#fff;text-align:center;vertical-align:middle;border-top-right-radius:10px;padding:9.5px 0px">
-        收藏（{{tracks.subscribedCount}}）
+        收藏（{{tracksHead.subscribedCount}}）
       </mu-col>
     </mu-row>
   </mu-container>
@@ -73,11 +73,11 @@
         },
         headMsg: {
           type: Object,
-          default: null
+          default: {}
         },
-        tracks: {
+        tracksHead: {
           type: Object,
-          default: null
+          default: {}
         }
       }
     }

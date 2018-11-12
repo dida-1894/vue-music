@@ -14,7 +14,7 @@
       <div ref="headMsg">
         <head-msg
           :coverImgUrl="coverImgUrl"
-          :tracks="tracks"
+          :tracksHead="tracksHead"
           :headMsg="headMsg"></head-msg>
       </div>
     </div>
@@ -69,8 +69,12 @@ export default {
     },
     tracks(){
       return {
-        trackCount: this.songlist.playlist.trackCount,
         playlist: this.songlist.playlist.tracks,
+      }
+    },
+    tracksHead() {
+      return {
+        trackCount: this.songlist.playlist.trackCount,
         subscribedCount: this.songlist.playlist.subscribedCount,
       }
     },
@@ -91,7 +95,7 @@ export default {
       let trnaslateY = Math.max(this.minTranslateY, newY)
       const percent = Math.abs(newY / this.headMsgHeight)
       let blur = Math.min(20 * percent, 20)
-      // console.log(trnaslateY )
+      // console.log(trnaslateY)
       this.$refs.layer.style = `transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);transition-duration: 0ms;transform: translate(0px, ${trnaslateY}px) scale(1) translateZ(0px);`
     }
   },
@@ -115,16 +119,17 @@ export default {
     }
   },
   created() {
-    setTimeout(() => {
+    this.$nextTick(() => {
       this.probeType = 3
       this.listenScroll = true
       this.headMsgHeight = this.$refs.headMsg.offsetHeight
       this.$refs.layer.style.height = this.headMsgHeight + 50 + "px"
       this.minTranslateY = -this.headMsgHeight + 41
       document.querySelector('.wrapper').style.marginTop = this.headMsgHeight + 50 + "px"
+      document.querySelector('.wrapper').style.height = window.innerHeight - 106 - this.headMsgHeight + 'px'
       console.log(this.minTranslateY)
       console.log(this.$refs.headMsg.offsetHeight)
-    }, 10)
+    })
   }
 }
 </script>
@@ -157,6 +162,5 @@ export default {
         -webkit-filter: blur(20px)
     .wrapper
       width: 100%
-      height calc(100% - 102px)
       position: relative
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="PlayScreen" v-show="fullScreen" :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}">
+    <div class="PlayScreen"  v-show="fullScreen" :style="{backgroundImage:'url(' + musicCover + ')'}">
       <div class="layer"></div>
       <detail-header :HeadLine="currentSong.name">
         <mu-icon
@@ -17,12 +17,14 @@
               span="6"
               align-self="center"
               offset="3"
-              :style="{backgroundImage:'url(' + currentSong.al.picUrl + ')'}"
+              :style="{backgroundImage:'url(' + musicCover + ')'}"
               :class="playCd">
             </mu-col>
             <mu-col v-show="isLyric">
               <ul class="lyric-box">
-                <li v-for="(lyric,index) in lyrics"></li>
+                <li v-for="(lyric,index) in lyrics">
+                  <p ref="lyricLine">{{lyric}}</p>
+                </li>
               </ul>
             </mu-col>
           </mu-row>
@@ -124,6 +126,7 @@
       },
       data(){
         return {
+          touch: {},
           isLyric: false,
           progress: 0,
           progressWidth: 0,
@@ -180,7 +183,8 @@
               width: 1.5,
               size: 35
             }
-          ]
+          ],
+          musicCover: ''
         }
       },
       methods: {
@@ -328,7 +332,13 @@
       watch: {
         currentSong() {
           this.$nextTick(() => {
+            this.musicCover = this.currentSong.al.picUrl
             this.$refs.audio.play()
+            api.getSongLyric(this.currentSong.id)
+              .then((res) => {
+                this.lyrics = res.data.lrc
+                console.log(this.lyrics)
+              })
           })
         },
         playing(newPlaying) {
@@ -338,34 +348,27 @@
           })
         },
         currentTime(newTime) {
-          if (newTime >= 0 && !this.touch.initiated) {
-            this.progress = ( newTime / this.currentSong.dt ) * 100000
-            this.$refs.progressBall.style.left = `${this.progress / 100 * this.progressWidth}px`
-            // console.log(this.$refs.progressBall.style.left)
-          }
+          this.$nextTick(() => {
+            if (newTime >= 0 && !this.touch.initiated) {
+              this.progress = ( newTime / this.currentSong.dt ) * 100000
+              this.$refs.progressBall.style.left = `${this.progress / 100 * this.progressWidth}px`
+              this.progressWidth = this.$refs.progressBar.clientWidth
+              // console.log(this.$refs.progressBall.style.left)
+            }
+          })
         },
       },
       created() {
-
-      },
-      mounted(){
         this.$nextTick(() => {
-          this.progressWidth = this.$refs.progressBar.clientWidth
+          console.log(this.playlist)
           this.touch = {}
           this.touch.initiated = false
           console.log(this.touch)
-          api.getSongLyric(this.currentSong.id)
-            .then((res) => {
-              this.lyrics = res.data.lrc.lyric
-              console.log(this.lyrics)
-            })
-          // api.getMusicPlayUrl(this.currentSong.id)
-          //   .then((res) => {
-          //     console.log(res)
-          //   })
-          // this.$refs.audio.play()
-          console.log(this.currentSong)
+
         })
+      },
+      mounted(){
+
       }
     }
 </script>
