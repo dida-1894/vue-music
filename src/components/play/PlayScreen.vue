@@ -87,14 +87,30 @@
                 :value="icon.value"></mu-icon>
             </mu-col>
           </mu-row>
+          <mu-bottom-sheet :open.sync="openList" style="height: 40%">
+            <b-scroll
+              :data = "[playlist]"
+              :listenScroll = "listenScroll"
+              @scroll = "scroll"
+              style="height: 100%;overflow: hidden"
+              class="wrapper"
+              refs="wrappers">
+              <div class="content">
+                <song-list
+                  @playSong="playSong"
+                  :tracks="playlist"></song-list>
+              </div>
+            </b-scroll>
+          </mu-bottom-sheet>
         </mu-container>
       </div>
     </div>
 </template>
 
 <script>
-  import lyricParser from 'lyric-parser'
+  import BScroll from 'components/header/Scroll'
   import DetailHeader from 'components/header/DetailHeader'
+  import SongList from 'components/header/SongList'
   import api from '../../api/index'
   import {playModeConf} from '../../common/js/config'
   import {mapGetters, mapMutations} from 'vuex'
@@ -102,7 +118,9 @@
     export default {
       name: "PlayScreen",
       components: {
-        DetailHeader
+        DetailHeader,
+        SongList,
+        BScroll
       },
       computed: {
         playMode() {
@@ -126,6 +144,8 @@
       },
       data(){
         return {
+          listenScroll: false,
+          openList: false,
           touch: {},
           isLyric: false,
           progress: 0,
@@ -188,6 +208,19 @@
         }
       },
       methods: {
+        playSong(song, index) {
+          console.log(song + "   " + index)
+        },
+        openPlaylistSheet() {
+          console.log('open')
+          this.openList = true
+        },
+        scroll() {
+          // console.log('scrolling')
+        },
+        _parserLyric(lrc) {
+          return lrc.split(' ')
+        },
         showLyric() {
           this.isLyric = !this.isLyric
         },
@@ -275,6 +308,7 @@
                   break
             case 4:
               console.log('playitem')
+              this.openPlaylistSheet()
                   break
           }
         },
@@ -336,8 +370,11 @@
             this.$refs.audio.play()
             api.getSongLyric(this.currentSong.id)
               .then((res) => {
-                this.lyrics = res.data.lrc
-                console.log(this.lyrics)
+                let dataReault = res.data.lrc.lyric
+                if (typeof dataReault === 'string' ) {
+                  this.lyrics = this._parserLyric(dataReault)
+                  console.log(this.lyrics)
+                }
               })
           })
         },
@@ -360,15 +397,16 @@
       },
       created() {
         this.$nextTick(() => {
-          console.log(this.playlist)
+          this.listenScroll = true
           this.touch = {}
           this.touch.initiated = false
           console.log(this.touch)
-
+          if (this.playlist != 0) {
+            this.musicCover = this.currentSong.al.picUrl
+          }
         })
       },
       mounted(){
-
       }
     }
 </script>

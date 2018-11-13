@@ -68,9 +68,7 @@ export default {
       }
     },
     tracks(){
-      return {
-        playlist: this.songlist.playlist.tracks,
-      }
+      return this.songlist.playlist.tracks
     },
     tracksHead() {
       return {
@@ -120,6 +118,7 @@ export default {
   },
   created() {
     this.$nextTick(() => {
+      console.log(this.songlist)
       this.probeType = 3
       this.listenScroll = true
       this.headMsgHeight = this.$refs.headMsg.offsetHeight

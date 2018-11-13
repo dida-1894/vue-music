@@ -3,7 +3,7 @@
     <mu-row
       class="playlist"
       align-items="center"
-      v-for="(play,index) in tracks.playlist"
+      v-for="(play,index) in tracks"
       @click="playSong(play, index)"
       :key="index">
       <mu-col class="list-icon" span="1">{{index + 1}}</mu-col>
@@ -32,7 +32,7 @@
       name: "SongList",
       props: {
         tracks: {
-          type: Object,
+          type:  Array,
           default: null
         }
       },
@@ -40,6 +40,11 @@
         playSong(song, index){
           this.$emit('playSong', song, index)
         }
+      },
+      created() {
+        this.$nextTick(() => {
+          console.log(this.tracks instanceof Array)
+        })
       }
     }
 </script>
