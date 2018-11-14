@@ -28,6 +28,10 @@ export default {
       type: [Array,Object],
       default: null
     },
+    pullup: {
+      type: Boolean,
+      default: true
+    },
     pulldown: {
       type: Boolean,
       default: false
@@ -81,14 +85,14 @@ export default {
       }
 
       // 是否派发顶部下拉事件，用于下拉刷新
-      if (this.pulldown) {
-        this.scroll.on('touchend', (pos) => {
+      // if (this.pulldown) {
+        this.scroll.on('touchEnd', (pos) => {
           // 下拉动作
           if (pos.y > 50) {
             this.$emit('pulldown')
           }
         })
-      }
+      // }
 
       // 是否派发列表滚动开始的事件
       if (this.beforeScroll) {

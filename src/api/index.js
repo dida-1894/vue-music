@@ -10,12 +10,12 @@ const SongLyric = 'http://musicapi.ashyang.cn/lyric'
 const HighlyqualitySonglist = 'http://musicapi.ashyang.cn/top/playlist/highquality'
 
 export default {
-  getHighlyqualitySonglist(tag, limit, updateTime){
+  getHighlyqualitySonglist(before, tag, limit){
     return axios.get(HighlyqualitySonglist, {
       params: {
+        before: before,
         tag: tag,
-        limit: 4,
-        updateTime: updateTime
+        limit: 10
       }
     })
   },
