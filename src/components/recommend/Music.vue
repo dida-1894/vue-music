@@ -8,7 +8,7 @@
         </mu-carousel-item>
       </mu-carousel>
       <div style="background-color:#fff">
-        <icon-item></icon-item>
+        <icon-item @selectRecommend="selectRecommend"></icon-item>
         <div class="re-content">
           <card @goToSonglistDetail="goToSonglistDetail" :content="SongList"></card>
           <card :content="NewSong"></card>
@@ -59,6 +59,11 @@ export default {
           })
           this.setSonglist(res.data)
         })
+    },
+    selectRecommend(name) {
+      this.$router.push({
+        path: 'recommend/songlist'
+      })
     },
     getData: function(){
       api.getRecommendBanner()

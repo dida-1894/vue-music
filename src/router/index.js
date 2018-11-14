@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Recommend from 'components/recommend/recommend'
+import HighqualitySonglist from 'components/recommend/HighqualitySonglist'
 import SongListDetail from 'components/rank/SongListDetail'
 import Search from 'components/search/search'
 import Singer from 'components/singer/singer'
@@ -58,6 +59,10 @@ export default new Router({
     {
       path: "/search",
       component: Search
+    },
+    {
+      path: "/recommend/songlist",
+      component: HighqualitySonglist
     }
   ]
 })

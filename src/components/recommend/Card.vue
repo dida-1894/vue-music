@@ -5,7 +5,7 @@
       <mu-icon value="keyboard_arrow_right" style="vertical-align:middle"></mu-icon>
     </h2>
     <mu-row gutter>
-      <mu-col span="4" v-for="(item, index) in content.list" :key="index" @click="getDetail(item)">
+      <mu-col :span="col" v-for="(item, index) in content.list" :key="index" @click="getDetail(item)">
         <!-- <router-link tag="div"
         :to="{ name: 'SongListDetail', params: {id:item.id} }"> -->
           <img v-lazy="item.picUrl" alt="">
@@ -24,6 +24,10 @@ export default {
     content: {
       type: Object,
       default: {}
+    },
+    col: {
+      type: Number,
+      default: 4
     }
   },
   methods: {

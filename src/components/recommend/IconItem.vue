@@ -1,7 +1,7 @@
 <template lang="html">
   <mu-container>
     <mu-row>
-      <mu-col span="3" v-for="(item,index) in Icon" :key="index">
+      <mu-col @click="selectRecommend(item.name)" span="3" v-for="(item,index) in Icon" :key="index">
         <div class="icon-box">
           <mu-icon size="30" :value="item.icon" color="#fff"></mu-icon>
         </div>
@@ -36,6 +36,12 @@ export default {
           icon: "list_alt"
         }
       ]
+    }
+  },
+  methods: {
+    selectRecommend(name) {
+      console.log(name)
+      this.$emit('selectRecommend', name)
     }
   }
 }
