@@ -15,6 +15,7 @@
     "babel-runtime": "^6.26.0",
     "better-scroll": "^1.12.6",
     "fastclick": "^1.0.6",
+    "jsonp": "^0.2.1",
     "lyric-parser": "^1.0.1",
     "muse-ui": "^3.0.1",
     "stylus": "^0.54.5",

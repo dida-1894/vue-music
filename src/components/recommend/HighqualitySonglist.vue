@@ -13,7 +13,7 @@
         <div class="content">
           <mu-row style="margin: 8px 0px">
             <mu-col span="4">
-              <mu-button round color="#D32F2F">
+              <mu-button @click.native="openSonglistChoice" round color="#D32F2F">
                 <span>全部歌单</span>
                 <mu-icon value="chevron_right"></mu-icon>
               </mu-button>
@@ -32,6 +32,19 @@
         </div>
       </b-scroll>
     <main-footer></main-footer>
+    <mu-dialog transition="slide-bottom" fullscreen :open="openFullscreen">
+      <mu-appbar color="#D32F2F" title="类型选择">
+        <mu-button slot="left" icon @click.native="closeSonglistChoice">
+          <mu-icon value="close"></mu-icon>
+        </mu-button>
+        <mu-button slot="right" flat  @click.native="closeSonglistChoice">
+          取消
+        </mu-button>
+      </mu-appbar>
+      <div style="padding: 24px;">
+        this is a fullscreen dialog
+      </div>
+    </mu-dialog>
   </div>
 </template>
 
@@ -50,22 +63,30 @@
       },
       data() {
         return {
+          openFullscreen: false,
           songlist: [],
           listenScroll: true,
           pullup: true,
-          updateTime: 0
+          updateTime: 0,
+          limit: 10
         }
       },
       methods:{
+        openSonglistChoice() {
+          this.openFullscreen = true
+        },
+        closeSonglistChoice() {
+          this.openFullscreen = false
+        },
         scroll(pos) {
         },
         loadMore: function () {
           let updateTime = this.updateTime
-          console.log(updateTime)
-          api.getHighlyqualitySonglist(updateTime)
+          api.getHighlyqualitySonglist(updateTime, this.limit)
             .then((res) => {
               let dataResult = res.data.playlists
-              this.updateTime = dataResult[0].updateTime
+              this.updateTime = dataResult[dataResult.length-1].updateTime
+              console.log(res.data.playlists)
               this.songlist = dataResult.reduce((coll, item) => {
                 coll.push(item)
                 return coll
@@ -76,12 +97,12 @@
       created() {
         this.$nextTick(() => {
           this.pullup = true
-          api.getHighlyqualitySonglist()
+          api.getHighlyqualitySonglist("" ,this.limit,)
             .then((res) => {
               //
               let dataResult = res.data.playlists
               this.songlist = dataResult
-              this.updateTime = res.data.playlists[0].updateTime
+              this.updateTime = dataResult[dataResult.length -1].updateTime
             })
         })
       }
