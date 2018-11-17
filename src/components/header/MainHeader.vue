@@ -3,7 +3,9 @@
     <mu-container>
       <mu-row>
         <mu-col span="1">
-          <mu-icon :value="iconName" color="#fff" left></mu-icon>
+          <slot name="leftIcon">
+            <mu-icon :value="iconName" color="#fff" left></mu-icon>
+          </slot>
         </mu-col>
         <mu-col span="10">
           <slot name="headerMiddle">

@@ -1,6 +1,12 @@
 <template>
   <div class="high-song-recommend">
     <main-header>
+        <mu-icon
+          value="keyboard_arrow_left"
+          color="#fff"
+          slot="leftIcon"
+          size="30"
+          @click="back"></mu-icon>
       <h2 style="text-align: center;color: #f5f5f5;font-weight: bolder" slot="headerMiddle">歌单</h2>
     </main-header>
       <b-scroll
@@ -42,7 +48,7 @@
         </mu-button>
       </mu-appbar>
       <div style="padding: 24px;">
-        this is a fullscreen dialog
+        
       </div>
     </mu-dialog>
   </div>
@@ -72,6 +78,9 @@
         }
       },
       methods:{
+        back() {
+          this.$router.go(-1)
+        },
         openSonglistChoice() {
           this.openFullscreen = true
         },

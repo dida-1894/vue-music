@@ -9,7 +9,7 @@
       <mu-col class="list-icon" span="1">{{index + 1}}</mu-col>
       <mu-col span="9">
         <div class="music-name">
-          {{play.al.name}}
+          {{play.name}}
           <div class="ar" style="font-size:12px;color:#aaa">
                   <span v-for='(ar, i) in play.ar' :key="i">
                     {{ar.name}}

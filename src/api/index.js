@@ -8,9 +8,21 @@ const NewSong = 'http://musicapi.ashyang.cn/personalized/newsong'
 const MusicPlayUrl = 'http://musicapi.ashyang.cn/song/url'
 const SongLyric = 'http://musicapi.ashyang.cn/lyric'
 const HighlyqualitySonglist = 'http://musicapi.ashyang.cn/top/playlist/highquality'
+const SearchHot = 'http://musicapi.ashyang.cn/search/hot'
+const Search = 'http://musicapi.ashyang.cn/search'
 
 export default {
-  getHighlyqualitySonglist(before, limit, tag){
+  getSearch(keywords) {
+    return axios.get(Search, {
+      params: {
+        keywords
+      }
+    })
+  },
+  getSearchHot() {
+    return axios.get(SearchHot)
+  },
+  getHighlyqualitySonglist(before, limit, tag) {
     return axios.get(HighlyqualitySonglist, {
       params: {
         before: before,

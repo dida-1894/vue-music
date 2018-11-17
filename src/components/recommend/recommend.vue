@@ -1,7 +1,9 @@
 <template lang="html">
   <div id="recommend">
     <main-header :iconName="HIconLeft">
-      <search slot="headerMiddle"></search>
+      <div class="search" slot="headerMiddle" @click="search">
+        <input type="text" name="" value="" placeholder="大家都在搜索 五月天">
+      </div>
     </main-header>
     <div class="bg"></div>
     <mu-tabs
@@ -45,6 +47,11 @@ export default {
   watch: {
   },
   methods: {
+    search() {
+      this.$router.push({
+        path: '/search'
+      })
+    },
     goRecommend: function(){
       this.$router.push({
         name: "ReMusic"
@@ -64,6 +71,18 @@ export default {
   #recommend
     height: 100%
     position: relative
+    .search
+      width: 100%
+      text-align: center
+      input
+        width: 80%
+        height: 30px
+        border: 0px
+        background-color: $color-background-d
+        font-size: $font-size-small-s
+        border-radius: 15px
+        line-height: 30px
+        text-align: center
     .header
       // position: absolute
       z-index: 100
